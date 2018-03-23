@@ -8,5 +8,9 @@ urlpatterns = [
 	url(r'^books$', views.indexBook),
 	url(r'^books/new$', views.newBook),
 	url(r'^reviews$', views.createBookAndReview),
+	url(r'^books/(?P<id>\d+)$', views.showBook),
+	url(r'^reviews/(?P<id>\d+)/delete$', views.deleteReview),
+	url(r'^reviews/(?P<id>\d+)$', views.createReview),
+	url(r'^users/(?P<id>\d+)$', views.showUser),
 	url(r'^logout$', views.logout),
 ]

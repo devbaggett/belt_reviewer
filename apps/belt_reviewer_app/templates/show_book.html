@@ -1,0 +1,56 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Book Reviews</title>
+	<link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
+</head>
+<body>
+	<div class="container">
+		<div id="header">
+			<a href="/books">Home</a>
+			<a href="/logout">Logout</a>
+		</div>
+		<div>
+			<h2>{{ book.title }}</h2>
+			<h6>by {{ book.author.name }}</h6>
+		</div>
+		<div class="half-size">
+			<h3>Reviews</h3>
+			<ul>
+				{% for review in reviews %}
+					<li>Rating: {{ review.rating }}</li>
+					<li><a href="/users/{{ review.user.id }}">{{ review.user.name }}</a> says: {{ review.review }}</li>
+					{% if current_user == review.user %}
+						<a href="/reviews/{{ review.id }}/delete">Delete this review</a>
+					{% endif %}
+					<hr>
+				{% endfor %}
+			</ul>
+		</div>
+		<div class="half-size">
+			<form action="/reviews/{{ book.id }}" method="POST">
+				{% csrf_token %}
+				<div>
+					<label>Add a review</label>
+				</div>
+				<div>
+					<textarea name="review"></textarea>
+				</div>
+				<div>
+					<label>Rating</label>
+					<input type="number" name="rating" min="0" max="5" step="0" default="0">
+				</div>
+				<input type="submit" value="Submit">
+			</form>
+			{% if messages %}
+				{% for message in messages %}
+					{% if 'new_review' in message.tags %}
+						<p class="error">{{ message }}</p>
+					{% endif %}
+				{% endfor %}
+			{% endif %}
+		</div>
+	</div>
+</body>
+</html>

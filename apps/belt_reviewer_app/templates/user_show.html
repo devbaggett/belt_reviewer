@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Book Reviews</title>
+	{% load static %}
+	<link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
+</head>
+<body>
+	<div class="container">
+		<div class="header">
+			<a href="/books">Home</a>
+			<a href="/logout">Logout</a>
+		</div>
+		<div>
+			<a href="/books/new">Add a book and review</a>
+		</div>
+		<h3>Name: {{ user.name }}</h3>
+		<h3>Email: {{ user.email }}
+		<h3>Total Reviews: {{ user.num_reviews }}</h3>
+
+		<h4>Posted reviews on the following reviews</h4>
+		<ul>
+			{% for book in reviews %}
+			<li><a href="/books/{{ book.id }}">{{ book.title }}</a></li>
+			{% endfor %}
+		</ul>
+	</div>
+</body>
+</html>

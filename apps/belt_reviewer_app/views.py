@@ -1,5 +1,6 @@
 from django.shortcuts import render, HttpResponse, redirect
 from django.contrib import messages
+from django.db.models import Count
 from .models import *
 
 # helper function
@@ -35,11 +36,12 @@ def loginUser(request):
 		return redirect('/')
 
 def indexBook(request):
-	duplicate_reviews = Review.objects.order_by('-created_at').all()[3:]
+	duplicate_reviews = Review.objects.order_by('-created_at').all()
 	other_book_reviews = []
 	for review in duplicate_reviews:
 		if review.book not in other_book_reviews:
 			other_book_reviews.append(review.book)
+	print duplicate_reviews
 	context = {
 		'current_user': current_user(request),
 		'recent_book_reviews': Review.objects.order_by('-created_at').all()[:3],
@@ -82,6 +84,54 @@ def createBookAndReview(request):
 			print request.POST
 			return redirect('/books/new')
 	return redirect('/books/new')
+
+def showBook(request, id):
+	book = Book.objects.filter(id=id).first()
+	context = {
+		'book': book,
+		'reviews': book.reviews.select_related('user').all(),
+		'current_user': current_user(request)
+	}
+	return render(request, 'show_book.html', context)
+
+def deleteReview(request, id):
+	review = Review.objects.filter(id=id).first()
+	book_id = review.book.id
+	if review:
+		review.delete()
+	return redirect('/books/' + str(book_id))
+
+def createReview(request, id):
+	#validate form
+	attempt = Review.objects.validateReview(request.POST)
+	if attempt['status'] == True:
+		Review.objects.create(
+			review=request.POST.get('review'),
+			rating=request.POST.get('rating'),
+			book=Book.objects.get(id=id),
+			user=current_user(request)
+		)
+		return redirect('/books')
+	else:
+		for error in attempt['errors']:
+			messages.add_message(request, messages.ERROR, error, extra_tags="new_review")
+		return redirect('/books/{}'.format(id))
+
+def showUser(request, id):
+	user = User.objects.user = User.objects.annotate(num_reviews=Count('reviews')).filter(id=id).first()
+	if user:
+		reviews = user.reviews.all()
+		new_reviews = []
+		for review in reviews:
+			if review.book not in new_reviews:
+				new_reviews.append(review.book)
+	context	= {
+		'user': user,
+		'reviews': new_reviews
+	}
+	return render(request, 'user_show.html', context)
+
+
 
 def logout(request):
 	request.session.clear()

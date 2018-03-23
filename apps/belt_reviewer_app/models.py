@@ -62,6 +62,22 @@ class ReviewManager(models.Manager):
 			is_valid = False
 		return {'status': is_valid, 'errors': errors}
 
+	def validateReview(self, postData):
+		is_valid = True
+		errors = []
+		if len(postData.get('review')) == 0:
+			errors.append('Review must not be blank')
+		if postData.get('rating') == '':
+			errors.append('Your rating is invalid')
+			is_valid = False
+		elif int(postData.get('rating')) < 0 or int(postData.get('rating')) > 5:
+			errors.append('Your rating is invalid')
+			is_valid = False
+		return {'status': is_valid, 'errors': errors}
+
+	
+
+
 
 
 
