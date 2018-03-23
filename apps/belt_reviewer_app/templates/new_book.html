@@ -1,0 +1,63 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Book Reviews</title>
+	<link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
+</head>
+<body>
+	<div class="container">
+		<div id="header">
+			<a href="/books">Add Book and Review</a>
+			<a href="/logout">Logout</a>
+		</div>
+		<div>
+			<h4>Add book title and review</h4>
+			<form action="/reviews" method="POST">
+				{% csrf_token %}
+				<div>
+					<label>Title</label>
+					<input type="text" name="title">
+				</div>
+				<div>
+					<label>Author</label>
+				</div>
+				<div>
+					<label>Choose from a list</label>
+					<select name='list_author'>
+						<option disabled selected></option>
+						{% for author in authors %}
+						<option value="{{ author.id }}">{{ author.name }}</option>
+						{% endfor %}
+						
+					</select>
+				</div>
+				<div>
+					<label>Add a new author</label>
+					<input type="text" name="new_author">
+				</div>
+				<div>
+					<label>Review</label>
+				</div>
+				<div>
+					<textarea name="review"></textarea>
+				</div>
+				<div>
+					<label>Rating</label>
+					<input type="number" name="rating" min="0" max="5" step="1">
+				</div>
+				<div>
+					<input type="submit" value="Submit">
+				</div>
+			</form>
+			{% if messages %}
+				{% for message in messages %}
+					{% if 'new_book' in message.tags %}
+						<p class="error">{{ message }}</p>
+					{% endif %}
+				{% endfor %}
+			{% endif %}
+		</div>
+	</div>
+</body>
+</html>
